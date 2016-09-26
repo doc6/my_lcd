@@ -79,6 +79,8 @@ extern void my_lcd_display(char string[]);
 /*
  * 	Displays a string of words on the LCD without
  * 	splitting words between a line on the display.
+ * 	Arguments are the length of the string array
+ * 	and the string array, use: sizeof(string).
  */
 extern void my_lcd_display_AutoWrap(int stringSize, char string[]);
 
