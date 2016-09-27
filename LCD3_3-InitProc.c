@@ -17,12 +17,23 @@
 #define LCD_RW 0x10
 #define LCD_EN 0x08
 
-unsigned char ctrl_port_b;
+//#define CTRL_BITS (LCD_EN | LCD_RW | LCD_RS)
+//#define NOT_CTRL_BITS (~CTRL_BITS)
+//
+//static unsigned char ctrl_port;
+//
+//static void ctrl_set(unsigned char EN, unsigned char RW, unsigned char RS)
+//{
+//	if ( ctrl_port == 'b' )
+//	{
+//		PORTB |= (EN | RW | RS);
+//	}
+//	if ( ctrl_port == 'c' )
+//	{
+//		PORTB |= ();
+//	}
+//}
 
-#if ctrl_port_b
-#define PORTC PORTB
-#define DDRC DDRB
-#endif
 
 static int bitmode = 0;
 
@@ -34,24 +45,20 @@ static inline void delay_us(unsigned int microsecs)
 	_delay_loop_2(4*microsecs);
 }
 
-/*
-static unsigned char ctrl_port;
-
-static void ctrl_set(unsigned char EN, unsigned char RW, unsigned char RS)
+/* Pulses the enable line for 1 us to send data to and from the LCD. */
+static inline void pulse_EN(void)
 {
-	if ( ctrl_port == 'b' )
-	{
-		PORTB |= (EN | RW | RS);
-	}
-	if ( ctrl_port == 'c' )
-	{
-		PORTB |= ();
-	}
+	PORTC |= LCD_EN;		// Enable instruction read
+	delay_us(1);
+	PORTC &= ~LCD_EN;		// Disable instruction read.
 }
-*/
+
+
 
 /*
  * 	Wait for the LCD to be ready to receive data by reading the busy flag.
+ *
+ * 	Busy bit still not working, but using this function to delay instead.
  */
 static void LCD_checkBusy()
 {
@@ -68,15 +75,15 @@ static void LCD_checkBusy()
 	// Check for busy flag to be 0
 	while(PIND & (1<<7))
 	{
-		PORTC &= ~LCD_EN;
-		PORTC |= LCD_EN;
+		pulse_EN();
 		// need to add a clock delay here, ask M. J. Cree.
 	}
-	delay_us(1);		// Very small delay in case LCD isn't quite ready.
+	delay_us(50);		// Very small delay in case LCD isn't quite ready.
 
 	// Restore port c and d register i/o states.
 	DDRC = PCstate;
 	DDRD = PDstate;
+
 }
 
 /*
@@ -92,13 +99,10 @@ static void LCD_writeInstruction(int instruction)
 	if (bitmode == 8)
 	{
 		// Send instruction to LCD:
-		PORTC &= ~LCD_EN;		// Disable instruction read.
 		PORTD = instruction;	// Load the instruction to portD.
-		PORTC |= LCD_EN;		// Enable instruction read
-		delay_us(100);
-		PORTC &= ~LCD_EN;			// Disable instruction read.
-		delay_us(100);
-		//LCD_checkBusy();		// Wait for LCD to process instruction.
+		pulse_EN();				// Pulse the enable pin to send the instruction to the LCD.
+		//delay_us(100);			// Wait for LCD to process instruction.
+		LCD_checkBusy();		// Wait for LCD to process instruction.
 	}
 
 	// 4 bit mode:
@@ -106,20 +110,15 @@ static void LCD_writeInstruction(int instruction)
 	{
 		// Send instruction to LCD:
 		// Send the 4 MSB of the instruction first:
-		PORTC &= ~LCD_EN;					// Disable instruction read.
 		PORTD = 0xF0 & instruction;			// Load 4 MSBs of the instruction to portD.
-		PORTC |= LCD_EN;					// Enable instruction read
-		delay_us(100);
-		PORTC &= ~LCD_EN;					// Disable instruction read.
-		delay_us(100);						// Wait for LCD to process instruction.
+		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
+		delay_us(1);						// Wait for LCD to process instruction.
+
 		// Send the 4 LSB of the instruction second:
-		PORTC &= ~LCD_EN;					// Disable instruction read.
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
-		PORTC |= LCD_EN;					// Enable instruction read
-		delay_us(100);
-		PORTC &= ~LCD_EN;					// Disable instruction read.
-		delay_us(100);
-		//LCD_checkBusy();					// Wait for LCD to process instruction.
+		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
+		//delay_us(100);
+		LCD_checkBusy();					// Wait for LCD to process instruction.
 	}
 }
 
@@ -140,32 +139,25 @@ static void LCD_writeToDDRAM(int data, int address)
 	if (bitmode == 8)
 	{
 		// Send data to LCD:
-		PORTC &= ~LCD_EN;		// Set Enable = 0.
 		PORTD = data;			// Load the data to portD.
-		PORTC |= LCD_EN;		// Set Enable = 1.
-		delay_us(100);
-		PORTC &= ~LCD_EN;		// Disable instruction read.
-		delay_us(100);
-		//LCD_checkBusy();		// Wait for LCD to process instruction.
+		pulse_EN();				// Pulse the enable pin to send the instruction to the LCD.
+		//delay_us(100);			// Wait for LCD to process instruction.
+		LCD_checkBusy();		// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
 	if (bitmode == 4)
 	{
 		// Send data to LCD:
-		PORTC &= ~LCD_EN;			// Set Enable = 0.
+		// Send the 4 MSB of the data first:
 		PORTD = 0xF0 & data;		// Load 4 MSBs of the data to portD.
-		PORTC |= LCD_EN;			// Set Enable = 1.
-		delay_us(100);
-		PORTC &= ~LCD_EN;			// Disable instruction read.
-		delay_us(100);				// Wait for LCD to process instruction.
+		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
+		delay_us(1);				// Wait for LCD to process instruction.
 
-		PORTC &= ~LCD_EN;			// Set Enable = 0.
+		// Send the 4 LSB of the data second:
 		PORTD = 0xF0 & (data<<4);	// Load 4 LSBs of the data to portD.
-		PORTC |= LCD_EN;			// Set Enable = 1.
-		delay_us(100);
-		PORTC &= ~LCD_EN;			// Disable instruction read.
-		delay_us(100);
-		//LCD_checkBusy();			// Wait for LCD to process instruction.
+		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
+		//delay_us(100);				// Wait for LCD to process instruction.
+		LCD_checkBusy();			// Wait for LCD to process instruction.
 	}
 }
 
@@ -184,12 +176,9 @@ void my_lcd_clear()
 	if (bitmode == 8)
 	{
 		// Send instruction to LCD:
-		PORTC &= ~LCD_EN;					// Disable instruction read.
 		PORTD = instruction;				// Load the instruction to portD.
-		PORTC |= LCD_EN;					// Enable instruction read
-		delay_us(2000);
-		PORTC &= ~LCD_EN;					// Disable instruction read.
-		delay_us(2000);
+		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
+		delay_us(2000);						// Wait for LCD to process instruction.
 		//LCD_checkBusy();					// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
@@ -197,19 +186,14 @@ void my_lcd_clear()
 	{
 		// Send instruction to LCD:
 		// Send the 4 MSB of the instruction first:
-		PORTC &= ~LCD_EN;					// Disable instruction read.
 		PORTD = 0xF0 & instruction;			// Load 4 MSBs of the instruction to portD.
-		PORTC |= LCD_EN;					// Enable instruction read
-		delay_us(2000);
-		PORTC &= ~LCD_EN;					// Disable instruction read.
-		delay_us(2000);						// Wait for LCD to process instruction.
+		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
+		delay_us(1);						// Wait for LCD to process instruction.
+
 		// Send the 4 LSB of the instruction second:
-		PORTC &= ~LCD_EN;					// Disable instruction read.
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
-		PORTC |= LCD_EN;					// Enable instruction read
-		delay_us(2000);
-		PORTC &= ~LCD_EN;					// Disable instruction read.
-		delay_us(2000);
+		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
+		delay_us(2000);						// Wait for LCD to process instruction.
 		//LCD_checkBusy();					// Wait for LCD to process instruction.
 	}
 }
