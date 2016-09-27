@@ -17,25 +17,47 @@
 #define LCD_RW 0x10
 #define LCD_EN 0x08
 
-//#define CTRL_BITS (LCD_EN | LCD_RW | LCD_RS)
-//#define NOT_CTRL_BITS (~CTRL_BITS)
-//
-//static unsigned char ctrl_port;
-//
-//static void ctrl_set(unsigned char EN, unsigned char RW, unsigned char RS)
-//{
-//	if ( ctrl_port == 'b' )
-//	{
-//		PORTB |= (EN | RW | RS);
-//	}
-//	if ( ctrl_port == 'c' )
-//	{
-//		PORTB |= ();
-//	}
-//}
+
+static unsigned char ctrl_port_mode_b = 0;
+static unsigned char bitmode = 0;
 
 
-static int bitmode = 0;
+/*
+ * 	Sets the given control port value to 1
+ * 	for either port b or port c depending on the
+ * 	setting in the initalisation function.
+ */
+static void ctrl_set(unsigned char ctrl)
+{
+	if ( ctrl_port_mode_b )
+	{
+		PORTB |= ctrl;
+	}
+	else
+	{
+		PORTC |= ctrl;
+	}
+}
+
+/*
+ * 	Sets the given control port value to 0
+ * 	for either port b or port c depending on the
+ * 	setting in the initalisation function.
+ */
+static void ctrl_clear(unsigned char ctrl)
+{
+	if ( ctrl_port_mode_b )
+	{
+		PORTB &= ~ctrl;
+	}
+	else
+	{
+		PORTC &= ~ctrl;
+	}
+}
+
+
+
 
 /*
  * 	Delays from 0 us to 65535 us
@@ -48,9 +70,9 @@ static inline void delay_us(unsigned int microsecs)
 /* Pulses the enable line for 1 us to send data to and from the LCD. */
 static inline void pulse_EN(void)
 {
-	PORTC |= LCD_EN;		// Enable instruction read
+	ctrl_set(LCD_EN);		// Enable instruction read
 	delay_us(1);
-	PORTC &= ~LCD_EN;		// Disable instruction read.
+	ctrl_clear(LCD_EN);		// Disable instruction read.
 }
 
 
@@ -64,13 +86,14 @@ static void LCD_checkBusy()
 {
 	// Save the state of port c and d registers.
 	int PCstate = DDRC;
+	int PBstate = DDRB;
 	int PDstate = DDRD;
 
 	DDRD &= ~(1<<7);	// Set pin 7 on port d to input (busy bit pin).
 
 	// Set control signals to read from instruction register.
-	PORTC &= ~LCD_RS;	// RS = 0, instruction register
-	PORTC |= LCD_RW;	// RW = 1, read
+	ctrl_clear(LCD_RS);	// RS = 0, instruction register
+	ctrl_set(LCD_RW);	// RW = 1, read
 
 	// Check for busy flag to be 0
 	while(PIND & (1<<7))
@@ -82,6 +105,7 @@ static void LCD_checkBusy()
 
 	// Restore port c and d register i/o states.
 	DDRC = PCstate;
+	DDRB = PBstate;
 	DDRD = PDstate;
 
 }
@@ -92,8 +116,8 @@ static void LCD_checkBusy()
 static void LCD_writeInstruction(int instruction)
 {
 	/* Set up control lines to write to the instruction register: */
-	PORTC &= ~LCD_RS;		// RS=0 instruction register.
-	PORTC &= ~LCD_RW;		// RW=0 write.
+	ctrl_clear(LCD_RS);		// RS=0 instruction register.
+	ctrl_clear(LCD_RW);		// RW=0 write.
 
 	// 8 bit mode:
 	if (bitmode == 8)
@@ -101,7 +125,7 @@ static void LCD_writeInstruction(int instruction)
 		// Send instruction to LCD:
 		PORTD = instruction;	// Load the instruction to portD.
 		pulse_EN();				// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(100);			// Wait for LCD to process instruction.
+		//delay_us(100);		// Wait for LCD to process instruction.
 		LCD_checkBusy();		// Wait for LCD to process instruction.
 	}
 
@@ -131,18 +155,18 @@ static void LCD_writeToDDRAM(int data, int address)
 	LCD_writeInstruction(0x80 | address);
 
 	/* Set up control lines to write to the data register: */
-	PORTC |= LCD_RS;			// RS=1 data register.
-	PORTC &= ~LCD_RW;			// RW=0 write.
+	ctrl_set(LCD_RS);			// RS=1 data register.
+	ctrl_clear(LCD_RW);			// RW=0 write.
 
 
 	// 8 bit mode:
 	if (bitmode == 8)
 	{
 		// Send data to LCD:
-		PORTD = data;			// Load the data to portD.
-		pulse_EN();				// Pulse the enable pin to send the instruction to the LCD.
+		PORTD = data;				// Load the data to portD.
+		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
 		//delay_us(100);			// Wait for LCD to process instruction.
-		LCD_checkBusy();		// Wait for LCD to process instruction.
+		LCD_checkBusy();			// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
 	if (bitmode == 4)
@@ -156,7 +180,7 @@ static void LCD_writeToDDRAM(int data, int address)
 		// Send the 4 LSB of the data second:
 		PORTD = 0xF0 & (data<<4);	// Load 4 LSBs of the data to portD.
 		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(100);				// Wait for LCD to process instruction.
+		//delay_us(100);			// Wait for LCD to process instruction.
 		LCD_checkBusy();			// Wait for LCD to process instruction.
 	}
 }
@@ -169,8 +193,8 @@ void my_lcd_clear()
 	int instruction = 0x01;					// Define the clear instruction
 
 	/* Set up control lines to write to the instruction register: */
-	PORTC &= ~LCD_RS;						// RS=0 instruction register.
-	PORTC &= ~LCD_RW;						// RW=0 write.
+	ctrl_clear(LCD_RS);						// RS=0 instruction register.
+	ctrl_clear(LCD_RW);						// RW=0 write.
 
 	// 8 bit mode:
 	if (bitmode == 8)
@@ -199,11 +223,25 @@ void my_lcd_clear()
 }
 
 /*
- * 	Initialise the LCD for Control on portC and Data on portD.
+ * 	Initialise the LCD for Control on portC or portB and Data on portD.
+ *
+ * 	Set argument  bit to 8-bit mode or 4 for 4-bit mode.
+ * 	Set argument ctrl_port_mode_b to 0 for control lines on port c, or >= 1 for port b.
  */
-void my_lcd_init(int bit)
+void my_lcd_init(unsigned char bit, unsigned char ctrl_port_b)
 {
-	DDRC = 0x38;					// Set pins 3, 4, 5 on port c to outputs for  control pins: EN, RW, and RS respectively.
+	ctrl_port_mode_b = ctrl_port_b;
+
+	/* selects control ports on port B or C depending on the argument control port setting. */
+	if (ctrl_port_mode_b)
+	{
+		DDRB = 0x38;					// Set pins 3, 4, 5 on port b to outputs for  control pins: EN, RW, and RS respectively.
+	}
+	else
+	{
+		DDRC = 0x38;					// Set pins 3, 4, 5 on port c to outputs for  control pins: EN, RW, and RS respectively.
+	}
+
 
 	/*	Set the four upper pits of port D to output
 	 *	for the 4 bit LCD parallel data lines
@@ -239,9 +277,9 @@ void my_lcd_init(int bit)
 	{
 		bitmode = 4;					// Set to 4 bit mode
 
-		PORTC &= ~LCD_EN;
+		ctrl_clear(LCD_EN);
 		PORTD = 0x20;					//Function Set change to 4bit interface. ExT=40us
-		PORTC |= LCD_EN;
+		ctrl_set(LCD_EN);
 		delay_us(600);
 
 		LCD_writeInstruction(0x28);		// Function Set Duty: 1/16, Font: 5x7. ExT=40us
