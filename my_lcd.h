@@ -66,7 +66,11 @@
  * 	Initialise the LCD for Control on portC or portB and Data on portD for 8 bit and 4 bit mode depending on the argument (8 or 4).
  *
  * 	Set argument  bit to 8-bit mode or 4 for 4-bit mode.
- * 	Set argument ctrl_port_mode_b to 0 for control lines on port c, or >= 1 for port b.
+ *
+ * 	Set argument ctrl_port_b to > 0 (true) if using pins 11, 12, and 13 for the LCD
+ * 	control pins: EN, RW, and RS respectively.
+ * 	Set argument ctrl_port_b to 0 (false) to set control lines to port C, with pins
+ *	3, 4, and 5 as EN, RW, and RS respectively.
  */
 extern void my_lcd_init(unsigned char bit, unsigned char ctrl_port_mode_b);
 
@@ -75,7 +79,8 @@ extern void my_lcd_init(unsigned char bit, unsigned char ctrl_port_mode_b);
  *		general_delay sets the delay time for processing general instructions in us.
  *		clear_delay delay time for processing the clear instruction in us.
  *
- *		Default delay for general instuction is 100 us.
+ *		As per the dot matrix LCD data sheet supplied in ENEL317-16B lab manual:
+ *		Default delay for general instuction is 50 us.
  *		Default delay for clear instruction is 2000 us.
  */
 extern void my_lcd_process_delayTime(unsigned int general_delay, unsigned int clear_delay);
@@ -97,11 +102,5 @@ extern void my_lcd_display(char string[]);
  * 	and the string array, use: sizeof(string).
  */
 extern void my_lcd_display_AutoWrap(int stringSize, char string[]);
-
-/* 	Set ctrl_port_b to true(1) if using pins 11, 12, and 13 for the LCD
- * 	control pins: EN, RW, and RS respectively. If ctrl_port_b is not
- * 	true then the default control port is set to port C, with pins
- *	3, 4, and 5 as EN, RW, and RS respectively.
- */
 
 #endif

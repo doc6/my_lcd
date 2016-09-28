@@ -26,8 +26,8 @@ static unsigned int c_delay = 2000;				// Delay time for processing the clear in
 
 /*
  *	Sets the delay time for the LCD to process instructions to enable comparability between various LCD modules.
- *		general_delay sets the delay time for processing general instructions in us.
- *		clear_delay delay time for processing the clear instruction in us.
+ *	general_delay sets the delay time for processing general instructions in us.
+ *	clear_delay delay time for processing the clear instruction in us.
  */
 void my_lcd_process_delayTime(unsigned int general_delay, unsigned int clear_delay)
 {
@@ -70,8 +70,6 @@ static void ctrl_clear(unsigned char ctrl)
 }
 
 
-
-
 /*
  * 	Delays from 0 us to 65535 us
  */
@@ -88,42 +86,8 @@ static inline void pulse_EN(void)
 	ctrl_clear(LCD_EN);		// Disable instruction read.
 }
 
-
-
 /*
- * 	Wait for the LCD to be ready to receive data by reading the busy flag.
- *
- * 	Busy bit still not working, but using this function to delay instead.
- */
-static void LCD_checkBusy()
-{
-	// Save the state of port c and d registers.
-	int PCstate = DDRC;
-	int PBstate = DDRB;
-	int PDstate = DDRD;
-
-	DDRD &= ~(1<<7);	// Set pin 7 on port d to input (busy bit pin).
-
-	// Set control signals to read from instruction register.
-	ctrl_clear(LCD_RS);	// RS = 0, instruction register
-	ctrl_set(LCD_RW);	// RW = 1, read
-
-	// Check for busy flag to be 0
-	while(PIND & (1<<7))
-	{
-		pulse_EN();
-		// need to add a clock delay here, ask M. J. Cree.
-	}
-	delay_us(1);		// Very small delay in case LCD isn't quite ready.
-
-	// Restore port c and d register i/o states.
-	DDRC = PCstate;
-	DDRB = PBstate;
-	DDRD = PDstate;
-
-}
-/*
- *
+ *	Wait for LCD to process instruction given a duration time for this delay.
  */
 static void LCD_process(unsigned int delayTime)
 {
@@ -146,8 +110,6 @@ static void LCD_writeInstruction(int instruction)
 		// Send instruction to LCD:
 		PORTD = instruction;	// Load the instruction to portD.
 		pulse_EN();				// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(100);		// Wait for LCD to process instruction.
-		//LCD_checkBusy();		// Wait for LCD to process instruction.
 		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 
@@ -163,8 +125,6 @@ static void LCD_writeInstruction(int instruction)
 		// Send the 4 LSB of the instruction second:
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(100);
-		//LCD_checkBusy();					// Wait for LCD to process instruction.
 		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 }
@@ -188,8 +148,6 @@ static void LCD_writeToDDRAM(int data, int address)
 		// Send data to LCD:
 		PORTD = data;				// Load the data to portD.
 		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(100);			// Wait for LCD to process instruction.
-		//LCD_checkBusy();			// Wait for LCD to process instruction.
 		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
@@ -204,8 +162,6 @@ static void LCD_writeToDDRAM(int data, int address)
 		// Send the 4 LSB of the data second:
 		PORTD = 0xF0 & (data<<4);	// Load 4 LSBs of the data to portD.
 		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(100);			// Wait for LCD to process instruction.
-		//LCD_checkBusy();			// Wait for LCD to process instruction.
 		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 }
@@ -227,9 +183,7 @@ void my_lcd_clear()
 		// Send instruction to LCD:
 		PORTD = instruction;				// Load the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(2000);						// Wait for LCD to process instruction.
-		//LCD_checkBusy();					// Wait for LCD to process instruction.
-		LCD_process(c_delay);	// Wait for LCD to process instruction.
+		LCD_process(c_delay);				// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
 	if (bitmode == 4)
@@ -243,8 +197,6 @@ void my_lcd_clear()
 		// Send the 4 LSB of the instruction second:
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		//delay_us(2000);					// Wait for LCD to process instruction.
-		//LCD_checkBusy();					// Wait for LCD to process instruction.
 		LCD_process(c_delay);				// Wait for LCD to process instruction.
 	}
 }
@@ -375,31 +327,6 @@ static int NumberOfWords(char string[], int stringSize)
 		}
 	}
 	return numberOfWords;
-}
-
-/*
- * 	Gets the length of a word in a string specified by its word number.
- */
-static int GetWordLength(char string[], int stringSize, int wordNumber)
-{
-	int wordLength = 0;
-	int spaceNumber = 0;
-	int wordStartIndex = 0;
-	// find the array index for the start of the word
-	for(int h=0; spaceNumber!=wordNumber && (int)string[h]!=0 && h<stringSize; h++)
-	{
-		if((int)string[h]==' ')
-		{
-	   		spaceNumber++;
-	   		wordStartIndex = h+1;
-	   	}
-	}
-
-	for(int i = wordStartIndex; string[i]!=' ' && (int)string[i]!=0 && i<stringSize; i++)
-    {
-       	wordLength = i-wordStartIndex+1;
-    }
-    return wordLength;
 }
 
 /*
