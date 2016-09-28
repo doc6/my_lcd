@@ -76,13 +76,13 @@ Disassembly of section .text.pulse_EN:
 
 0000004a <pulse_EN>:
   4a:	88 e0       	ldi	r24, 0x08	; 8
-  4c:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+  4c:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
   50:	84 e0       	ldi	r24, 0x04	; 4
   52:	90 e0       	ldi	r25, 0x00	; 0
   54:	01 97       	sbiw	r24, 0x01	; 1
   56:	01 f4       	brne	.+0      	; 0x58 <pulse_EN+0xe>
   58:	88 e0       	ldi	r24, 0x08	; 8
-  5a:	0c 94 00 00 	jmp	0	; 0x0 <ctrl_set>
+  5a:	0c 94 00 00 	jmp	0	; 0x0 <__tmp_reg__>
 
 Disassembly of section .text.LCD_writeInstruction:
 
@@ -91,14 +91,14 @@ Disassembly of section .text.LCD_writeInstruction:
   aa:	ff 92       	push	r15
   ac:	7c 01       	movw	r14, r24
   ae:	80 e2       	ldi	r24, 0x20	; 32
-  b0:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+  b0:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
   b4:	80 e1       	ldi	r24, 0x10	; 16
-  b6:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+  b6:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
   ba:	80 91 00 00 	lds	r24, 0x0000
   be:	88 30       	cpi	r24, 0x08	; 8
   c0:	01 f4       	brne	.+0      	; 0xc2 <LCD_writeInstruction+0x1a>
   c2:	eb b8       	out	0x0b, r14	; 11
-  c4:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+  c4:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
   c8:	e0 91 00 00 	lds	r30, 0x0000
   cc:	f0 91 00 00 	lds	r31, 0x0000
   d0:	ee 0f       	add	r30, r30
@@ -114,7 +114,7 @@ Disassembly of section .text.LCD_writeInstruction:
   e6:	80 7f       	andi	r24, 0xF0	; 240
   e8:	99 27       	eor	r25, r25
   ea:	8b b9       	out	0x0b, r24	; 11
-  ec:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+  ec:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
   f0:	84 e0       	ldi	r24, 0x04	; 4
   f2:	90 e0       	ldi	r25, 0x00	; 0
   f4:	01 97       	sbiw	r24, 0x01	; 1
@@ -125,7 +125,7 @@ Disassembly of section .text.LCD_writeInstruction:
   fe:	8a 95       	dec	r24
  100:	01 f4       	brne	.+0      	; 0x102 <LCD_writeInstruction+0x5a>
  102:	eb b8       	out	0x0b, r14	; 11
- 104:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 104:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  108:	80 91 00 00 	lds	r24, 0x0000
  10c:	90 91 00 00 	lds	r25, 0x0000
  110:	88 0f       	add	r24, r24
@@ -151,15 +151,15 @@ Disassembly of section .text.my_lcd_clear:
 
 000003a6 <my_lcd_clear>:
  3a6:	80 e2       	ldi	r24, 0x20	; 32
- 3a8:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 3a8:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  3ac:	80 e1       	ldi	r24, 0x10	; 16
- 3ae:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 3ae:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  3b2:	80 91 00 00 	lds	r24, 0x0000
  3b6:	88 30       	cpi	r24, 0x08	; 8
  3b8:	01 f4       	brne	.+0      	; 0x3ba <my_lcd_clear+0x14>
  3ba:	81 e0       	ldi	r24, 0x01	; 1
  3bc:	8b b9       	out	0x0b, r24	; 11
- 3be:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 3be:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  3c2:	80 91 00 00 	lds	r24, 0x0000
  3c6:	90 91 00 00 	lds	r25, 0x0000
  3ca:	88 0f       	add	r24, r24
@@ -172,14 +172,14 @@ Disassembly of section .text.my_lcd_clear:
  3da:	84 30       	cpi	r24, 0x04	; 4
  3dc:	01 f4       	brne	.+0      	; 0x3de <my_lcd_clear+0x38>
  3de:	1b b8       	out	0x0b, r1	; 11
- 3e0:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 3e0:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  3e4:	84 e0       	ldi	r24, 0x04	; 4
  3e6:	90 e0       	ldi	r25, 0x00	; 0
  3e8:	01 97       	sbiw	r24, 0x01	; 1
  3ea:	01 f4       	brne	.+0      	; 0x3ec <my_lcd_clear+0x46>
  3ec:	80 e1       	ldi	r24, 0x10	; 16
  3ee:	8b b9       	out	0x0b, r24	; 11
- 3f0:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 3f0:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  3f4:	80 91 00 00 	lds	r24, 0x0000
  3f8:	90 91 00 00 	lds	r25, 0x0000
  3fc:	88 0f       	add	r24, r24
@@ -218,14 +218,14 @@ Disassembly of section .text.my_lcd_init:
  7de:	00 00       	nop
  7e0:	80 e3       	ldi	r24, 0x30	; 48
  7e2:	90 e0       	ldi	r25, 0x00	; 0
- 7e4:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 7e4:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  7e8:	e0 e1       	ldi	r30, 0x10	; 16
  7ea:	f0 e4       	ldi	r31, 0x40	; 64
  7ec:	31 97       	sbiw	r30, 0x01	; 1
  7ee:	01 f4       	brne	.+0      	; 0x7f0 <my_lcd_init+0x40>
  7f0:	80 e3       	ldi	r24, 0x30	; 48
  7f2:	90 e0       	ldi	r25, 0x00	; 0
- 7f4:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 7f4:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  7f8:	60 e9       	ldi	r22, 0x90	; 144
  7fa:	e6 2e       	mov	r14, r22
  7fc:	ff 24       	eor	r15, r15
@@ -235,7 +235,7 @@ Disassembly of section .text.my_lcd_init:
  804:	01 f4       	brne	.+0      	; 0x806 <my_lcd_init+0x56>
  806:	80 e3       	ldi	r24, 0x30	; 48
  808:	90 e0       	ldi	r25, 0x00	; 0
- 80a:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 80a:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  80e:	f7 01       	movw	r30, r14
  810:	31 97       	sbiw	r30, 0x01	; 1
  812:	01 f4       	brne	.+0      	; 0x814 <my_lcd_init+0x64>
@@ -247,14 +247,14 @@ Disassembly of section .text.my_lcd_init:
  820:	8a b9       	out	0x0a, r24	; 10
  822:	88 e3       	ldi	r24, 0x38	; 56
  824:	90 e0       	ldi	r25, 0x00	; 0
- 826:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 826:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  82a:	88 e0       	ldi	r24, 0x08	; 8
  82c:	90 e0       	ldi	r25, 0x00	; 0
- 82e:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
- 832:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 82e:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 832:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  836:	86 e0       	ldi	r24, 0x06	; 6
  838:	90 e0       	ldi	r25, 0x00	; 0
- 83a:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 83a:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  83e:	8f e0       	ldi	r24, 0x0F	; 15
  840:	90 e0       	ldi	r25, 0x00	; 0
  842:	00 c0       	rjmp	.+0      	; 0x844 <my_lcd_init+0x94>
@@ -262,31 +262,31 @@ Disassembly of section .text.my_lcd_init:
  846:	01 f4       	brne	.+0      	; 0x848 <my_lcd_init+0x98>
  848:	c0 93 00 00 	sts	0x0000, r28
  84c:	88 e0       	ldi	r24, 0x08	; 8
- 84e:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 84e:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  852:	80 e2       	ldi	r24, 0x20	; 32
  854:	8b b9       	out	0x0b, r24	; 11
  856:	88 e0       	ldi	r24, 0x08	; 8
- 858:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 858:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  85c:	80 e6       	ldi	r24, 0x60	; 96
  85e:	99 e0       	ldi	r25, 0x09	; 9
  860:	01 97       	sbiw	r24, 0x01	; 1
  862:	01 f4       	brne	.+0      	; 0x864 <my_lcd_init+0xb4>
  864:	88 e2       	ldi	r24, 0x28	; 40
  866:	90 e0       	ldi	r25, 0x00	; 0
- 868:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 868:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  86c:	88 e0       	ldi	r24, 0x08	; 8
  86e:	90 e0       	ldi	r25, 0x00	; 0
- 870:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
- 874:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 870:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 874:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  878:	86 e0       	ldi	r24, 0x06	; 6
  87a:	90 e0       	ldi	r25, 0x00	; 0
- 87c:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+ 87c:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
  880:	8c e0       	ldi	r24, 0x0C	; 12
  882:	90 e0       	ldi	r25, 0x00	; 0
  884:	cf 91       	pop	r28
  886:	ff 90       	pop	r15
  888:	ef 90       	pop	r14
- 88a:	0c 94 00 00 	jmp	0	; 0x0 <ctrl_set>
+ 88a:	0c 94 00 00 	jmp	0	; 0x0 <__tmp_reg__>
  88e:	cf 91       	pop	r28
  890:	ff 90       	pop	r15
  892:	ef 90       	pop	r14
@@ -305,7 +305,7 @@ Disassembly of section .text.my_lcd_display:
     1054:	ff 92       	push	r15
     1056:	cf 93       	push	r28
     1058:	5c 01       	movw	r10, r24
-    105a:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    105a:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     105e:	e1 2c       	mov	r14, r1
     1060:	f1 2c       	mov	r15, r1
     1062:	c1 2c       	mov	r12, r1
@@ -343,16 +343,16 @@ Disassembly of section .text.my_lcd_display:
     10a2:	c0 81       	ld	r28, Z
     10a4:	c6 01       	movw	r24, r12
     10a6:	80 68       	ori	r24, 0x80	; 128
-    10a8:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    10a8:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     10ac:	80 e2       	ldi	r24, 0x20	; 32
-    10ae:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    10ae:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     10b2:	80 e1       	ldi	r24, 0x10	; 16
-    10b4:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    10b4:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     10b8:	80 91 00 00 	lds	r24, 0x0000
     10bc:	88 30       	cpi	r24, 0x08	; 8
     10be:	01 f4       	brne	.+0      	; 0x10c0 <my_lcd_display+0x7a>
     10c0:	cb b9       	out	0x0b, r28	; 11
-    10c2:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    10c2:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     10c6:	e0 91 00 00 	lds	r30, 0x0000
     10ca:	f0 91 00 00 	lds	r31, 0x0000
     10ce:	ee 0f       	add	r30, r30
@@ -367,7 +367,7 @@ Disassembly of section .text.my_lcd_display:
     10e2:	8c 2f       	mov	r24, r28
     10e4:	80 7f       	andi	r24, 0xF0	; 240
     10e6:	8b b9       	out	0x0b, r24	; 11
-    10e8:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    10e8:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     10ec:	c4 01       	movw	r24, r8
     10ee:	01 97       	sbiw	r24, 0x01	; 1
     10f0:	01 f4       	brne	.+0      	; 0x10f2 <my_lcd_display+0xac>
@@ -376,7 +376,7 @@ Disassembly of section .text.my_lcd_display:
     10f6:	c0 01       	movw	r24, r0
     10f8:	11 24       	eor	r1, r1
     10fa:	8b b9       	out	0x0b, r24	; 11
-    10fc:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    10fc:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     1100:	e0 91 00 00 	lds	r30, 0x0000
     1104:	f0 91 00 00 	lds	r31, 0x0000
     1108:	ee 0f       	add	r30, r30
@@ -692,9 +692,9 @@ Disassembly of section .text.my_lcd_display_AutoWrap:
     4567:	8f 93       	push	r24
     4569:	ff 92       	push	r15
     456b:	ef 92       	push	r14
-    456d:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    456d:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     4571:	c7 01       	movw	r24, r14
-    4573:	0e 94 00 00 	call	0	; 0x0 <ctrl_set>
+    4573:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
     4577:	0f b6       	in	r0, 0x3f	; 63
     4579:	f8 94       	cli
     457b:	de bf       	out	0x3e, r29	; 62

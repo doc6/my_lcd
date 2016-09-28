@@ -1,5 +1,5 @@
 /*
- * Program: LCD3_3-InitProc.c
+ * Program: my_lcd.c
  * Author:  D. O. Corlett
  *
  * Initialisation, and display functions

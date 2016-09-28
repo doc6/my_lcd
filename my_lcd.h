@@ -1,13 +1,9 @@
 /*
  *  Module: my_lcd
- *  Author: M. J. Cree,
- *  Modified by D. O. Corlett,
+ *  Author: by D. O. Corlett
  *
- *  (C) 2009-2014 The University of Waikato
+ *	Functions for interfacing and displaying text to 16x2 LCD display.
  *
- *  Routines to interface to the 16x2 text LCD display.
- *  Modified to use D. O. Corlett's functions for
- *  displaying text to 16x2 LCD display
  */
 
 #ifndef _LIBRARY_LCD_H_			// Checks if this library has already been included.
