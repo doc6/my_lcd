@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../LCD3_3-InitProc.c 
+../my_lcd.c 
 
 OBJS += \
-./LCD3_3-InitProc.o 
+./my_lcd.o 
 
 C_DEPS += \
-./LCD3_3-InitProc.d 
+./my_lcd.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

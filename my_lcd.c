@@ -21,7 +21,7 @@
 static unsigned char ctrl_port_mode_b = 0;		// ctrl_port_mode_b = 0: use port C for LCD control bits, ctrl_port_mode_b > 0: use port B for LCD control bits.
 static unsigned char bitmode = 4;				// bitmode = 4: data is sent to LCD using 4 bits, bitmode = 8: data is sent to LCD using 8 bits.
 
-static unsigned int g_delay = 100;				// Delay time for processing general instructions in us.
+static unsigned int g_delay = 50;				// Delay time for processing general instructions in us.
 static unsigned int c_delay = 2000;				// Delay time for processing the clear instruction in us.
 
 /*
@@ -84,6 +84,7 @@ static inline void pulse_EN(void)
 	ctrl_set(LCD_EN);		// Enable instruction read
 	delay_us(1);
 	ctrl_clear(LCD_EN);		// Disable instruction read.
+	delay_us(1);
 }
 
 /*
@@ -120,7 +121,7 @@ static void LCD_writeInstruction(int instruction)
 		// Send the 4 MSB of the instruction first:
 		PORTD = 0xF0 & instruction;			// Load 4 MSBs of the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		delay_us(1);						// Wait for LCD to process instruction.
+
 
 		// Send the 4 LSB of the instruction second:
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
@@ -157,7 +158,6 @@ static void LCD_writeToDDRAM(int data, int address)
 		// Send the 4 MSB of the data first:
 		PORTD = 0xF0 & data;		// Load 4 MSBs of the data to portD.
 		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
-		delay_us(1);				// Wait for LCD to process instruction.
 
 		// Send the 4 LSB of the data second:
 		PORTD = 0xF0 & (data<<4);	// Load 4 LSBs of the data to portD.
@@ -192,7 +192,6 @@ void my_lcd_clear()
 		// Send the 4 MSB of the instruction first:
 		PORTD = 0xF0 & instruction;			// Load 4 MSBs of the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		delay_us(1);						// Wait for LCD to process instruction.
 
 		// Send the 4 LSB of the instruction second:
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
@@ -257,11 +256,7 @@ void my_lcd_init(unsigned char bit, unsigned char ctrl_port_b)
 	{
 		bitmode = 4;					// Set to 4 bit mode
 
-		ctrl_clear(LCD_EN);
-		PORTD = 0x20;					//Function Set change to 4bit interface. ExT=40us
-		ctrl_set(LCD_EN);
-		delay_us(600);
-
+		LCD_writeInstruction(0x20);		//Function Set change to 4bit interface. ExT=40us
 		LCD_writeInstruction(0x28);		// Function Set Duty: 1/16, Font: 5x7. ExT=40us
 		LCD_writeInstruction(0x08);		// Display OFF	 ExT=40us
 		my_lcd_clear();					// Display Clear	ExT=1.64ms
