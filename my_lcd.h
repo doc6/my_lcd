@@ -40,9 +40,10 @@
  *
  * 	The LCD uses three control lines, EN, RW, and RS.
  * 	These control lines can be configured on port B or port C.
- * 	To set control line to Port B set the global variable: ctrl_port_b
- * 	to true(1), to set control line to port C set ctrl_port_b to false(0).
- * 	The control lines are set to port C by default.
+ * 	To set control line to Port B set the ctrl_port_mode_b
+ * 	argument in the my_lcd_init() function to true(1), to set
+ * 	control line to port C set ctrl_port_b to false(0). The
+ * 	control lines are set to port C by default.
  *
  * 	Control lines:
  * 	Port B:

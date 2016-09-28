@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <util/delay.h>
 #include <avr/io.h>
-#include <util/delay_basic.h>
 #include "my_lcd.h"
 
 //define LCD control signal macros
@@ -238,7 +237,7 @@ void my_lcd_init(unsigned char bit, unsigned char ctrl_port_b)
 	LCD_writeInstruction(0x30);		// Function Set
 	delay_us(100);					// Wait 100 us or more.
 
-		// if initialise in 8 bit mode:
+	// if initialise in 8 bit mode:
 	if(bit == 8)
 	{
 		bitmode = 8;					// Set to 8 bit mode
@@ -251,7 +250,7 @@ void my_lcd_init(unsigned char bit, unsigned char ctrl_port_b)
 		LCD_writeInstruction(0x06);		// Entry Mode Set I/D: move right, S: no shift.	ExT=40us
 		LCD_writeInstruction(0x0F);		// Display ON	 ExT=40us
 	}
-		// if initialise in 4 bit mode:
+	// if initialise in 4 bit mode:
 	if(bit == 4)
 	{
 		bitmode = 4;					// Set to 4 bit mode
@@ -332,10 +331,10 @@ void my_lcd_display(char string[])
 	my_lcd_clear();					// Clear the LCD before writing to it.
 	int address = 0x00;				// Start DD RAM address at 0x00 (beginning of line 1)
 
-		/* Writes each character of string[] to the LCD.
-		 * Moves to second line if new line character
-		 * is found or if the end of the first line is
-		 * full. */
+	/* Writes each character of string[] to the LCD.
+	 * Moves to second line if new line character
+	 * is found or if the end of the first line is
+	 * full. */
 	for(int i = 0; (i < 32) && (string[i] != 0); i++, address++)
 	{
 		// If new line character on first line
