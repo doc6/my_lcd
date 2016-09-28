@@ -1,6 +1,6 @@
 /*
  *  Module: my_lcd
- *  Author: by D. O. Corlett
+ *  Author: D. O. Corlett
  *
  *	Functions for interfacing and displaying text to 16x2 LCD display.
  *
