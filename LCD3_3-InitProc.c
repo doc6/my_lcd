@@ -21,6 +21,20 @@
 static unsigned char ctrl_port_mode_b = 0;
 static unsigned char bitmode = 0;
 
+static unsigned int g_delay = 100;	// Delay time for processing general instructions in us.
+static unsigned int c_delay = 2000;	// Delay time for processing the clear instruction in us.
+
+/*
+ *	Sets the delay time for the LCD to process instructions to enable comparability between various LCD modules.
+ *		general_delay sets the delay time for processing general instructions in us.
+ *		clear_delay delay time for processing the clear instruction in us.
+ */
+
+void LCD_process_delayTime(unsigned int general_delay, unsigned int clear_delay)
+{
+	g_delay = general_delay;
+	c_delay = clear_delay;
+}
 
 /*
  * 	Sets the given control port value to 1
@@ -101,7 +115,7 @@ static void LCD_checkBusy()
 		pulse_EN();
 		// need to add a clock delay here, ask M. J. Cree.
 	}
-	delay_us(50);		// Very small delay in case LCD isn't quite ready.
+	delay_us(1);		// Very small delay in case LCD isn't quite ready.
 
 	// Restore port c and d register i/o states.
 	DDRC = PCstate;
@@ -109,6 +123,14 @@ static void LCD_checkBusy()
 	DDRD = PDstate;
 
 }
+/*
+ *
+ */
+static void LCD_process_instruction(unsigned int delayTime)
+{
+	delay_us(delayTime);		// Wait for LCD to process instruction.
+}
+
 
 /*
  * 	Sends instruction to LCD in either 8 bit mode or 4 bit mode.
@@ -126,7 +148,8 @@ static void LCD_writeInstruction(int instruction)
 		PORTD = instruction;	// Load the instruction to portD.
 		pulse_EN();				// Pulse the enable pin to send the instruction to the LCD.
 		//delay_us(100);		// Wait for LCD to process instruction.
-		LCD_checkBusy();		// Wait for LCD to process instruction.
+		//LCD_checkBusy();		// Wait for LCD to process instruction.
+		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 
 	// 4 bit mode:
@@ -142,7 +165,8 @@ static void LCD_writeInstruction(int instruction)
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
 		//delay_us(100);
-		LCD_checkBusy();					// Wait for LCD to process instruction.
+		//LCD_checkBusy();					// Wait for LCD to process instruction.
+		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 }
 
@@ -166,7 +190,8 @@ static void LCD_writeToDDRAM(int data, int address)
 		PORTD = data;				// Load the data to portD.
 		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
 		//delay_us(100);			// Wait for LCD to process instruction.
-		LCD_checkBusy();			// Wait for LCD to process instruction.
+		//LCD_checkBusy();			// Wait for LCD to process instruction.
+		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
 	if (bitmode == 4)
@@ -181,7 +206,8 @@ static void LCD_writeToDDRAM(int data, int address)
 		PORTD = 0xF0 & (data<<4);	// Load 4 LSBs of the data to portD.
 		pulse_EN();					// Pulse the enable pin to send the instruction to the LCD.
 		//delay_us(100);			// Wait for LCD to process instruction.
-		LCD_checkBusy();			// Wait for LCD to process instruction.
+		//LCD_checkBusy();			// Wait for LCD to process instruction.
+		LCD_process(g_delay);	// Wait for LCD to process instruction.
 	}
 }
 
@@ -202,8 +228,9 @@ void my_lcd_clear()
 		// Send instruction to LCD:
 		PORTD = instruction;				// Load the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		delay_us(2000);						// Wait for LCD to process instruction.
+		//delay_us(2000);						// Wait for LCD to process instruction.
 		//LCD_checkBusy();					// Wait for LCD to process instruction.
+		LCD_process(c_delay);	// Wait for LCD to process instruction.
 	}
 	// 4 bit mode:
 	if (bitmode == 4)
@@ -217,8 +244,9 @@ void my_lcd_clear()
 		// Send the 4 LSB of the instruction second:
 		PORTD = 0xF0 & (instruction<<4);	// Load 4 LSBs of the instruction to portD.
 		pulse_EN();							// Pulse the enable pin to send the instruction to the LCD.
-		delay_us(2000);						// Wait for LCD to process instruction.
+		//delay_us(2000);					// Wait for LCD to process instruction.
 		//LCD_checkBusy();					// Wait for LCD to process instruction.
+		LCD_process(c_delay);				// Wait for LCD to process instruction.
 	}
 }
 
@@ -243,7 +271,8 @@ void my_lcd_init(unsigned char bit, unsigned char ctrl_port_b)
 	}
 
 
-	/*	Set the four upper pits of port D to output
+	/*
+	 * 	Set the four upper pits of port D to output
 	 *	for the 4 bit LCD parallel data lines
 	 *	(LCD startup only uses the 4 bit data lines).
 	 */
