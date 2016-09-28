@@ -10,7 +10,7 @@
  *  displaying text to 16x2 LCD display
  */
 
-#ifndef _LIBRARY_LCD_H_
+#ifndef _LIBRARY_LCD_H_			// Checks if this library has already been included.
 #define _LIBRARY_LCD_H_
 
 
@@ -61,6 +61,7 @@
  *
  */
 
+
 /*
  * 	Initialise the LCD for Control on portC or portB and Data on portD for 8 bit and 4 bit mode depending on the argument (8 or 4).
  *
@@ -68,6 +69,16 @@
  * 	Set argument ctrl_port_mode_b to 0 for control lines on port c, or >= 1 for port b.
  */
 extern void my_lcd_init(unsigned char bit, unsigned char ctrl_port_mode_b);
+
+/*
+ *	Sets the delay time for the LCD to process instructions to enable comparability between various LCD modules.
+ *		general_delay sets the delay time for processing general instructions in us.
+ *		clear_delay delay time for processing the clear instruction in us.
+ *
+ *		Default delay for general instuction is 100 us.
+ *		Default delay for clear instruction is 2000 us.
+ */
+extern void my_lcd_process_delayTime(unsigned int general_delay, unsigned int clear_delay);
 
 /*
  * 	Clears the LCD.

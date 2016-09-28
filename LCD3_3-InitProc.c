@@ -18,19 +18,18 @@
 #define LCD_EN 0x08
 
 
-static unsigned char ctrl_port_mode_b = 0;
-static unsigned char bitmode = 0;
+static unsigned char ctrl_port_mode_b = 0;		// ctrl_port_mode_b = 0: use port C for LCD control bits, ctrl_port_mode_b > 0: use port B for LCD control bits.
+static unsigned char bitmode = 4;				// bitmode = 4: data is sent to LCD using 4 bits, bitmode = 8: data is sent to LCD using 8 bits.
 
-static unsigned int g_delay = 100;	// Delay time for processing general instructions in us.
-static unsigned int c_delay = 2000;	// Delay time for processing the clear instruction in us.
+static unsigned int g_delay = 100;				// Delay time for processing general instructions in us.
+static unsigned int c_delay = 2000;				// Delay time for processing the clear instruction in us.
 
 /*
  *	Sets the delay time for the LCD to process instructions to enable comparability between various LCD modules.
  *		general_delay sets the delay time for processing general instructions in us.
  *		clear_delay delay time for processing the clear instruction in us.
  */
-
-void LCD_process_delayTime(unsigned int general_delay, unsigned int clear_delay)
+void my_lcd_process_delayTime(unsigned int general_delay, unsigned int clear_delay)
 {
 	g_delay = general_delay;
 	c_delay = clear_delay;
@@ -126,7 +125,7 @@ static void LCD_checkBusy()
 /*
  *
  */
-static void LCD_process_instruction(unsigned int delayTime)
+static void LCD_process(unsigned int delayTime)
 {
 	delay_us(delayTime);		// Wait for LCD to process instruction.
 }
